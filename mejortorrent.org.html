@@ -51,6 +51,7 @@ and open the template in the editor.
                infoNODE.innerHTML="CERCANT...tingues paciència..";
                
                var x = document.getElementById("search_input").value;
+               document.getElementById("search_mejortorrent1").value="";
                var regex = /<tr[\s\S]*Peliculas/i;
                //var queryURL = "https://mejortorrent1.com/?s=";
                //var downloadURL = "https://mejortorrent1.com/descargar.php"
@@ -84,7 +85,7 @@ and open the template in the editor.
 
                               // var text = /\S[\s\S]*/.exec(movieName);
                                //console.log(text[0]);
-                               console.log(movieHREF);
+                               //console.log(movieHREF);
 
                                getHTML(movieHREF, i, function(response2){
                                    var movieIMAGE = response2.getElementsByTagName('img');
@@ -105,8 +106,8 @@ and open the template in the editor.
                                         
                                         stringIncluded = eliminarDiacriticosEs(stringIncluded);
                                         comparedX = eliminarDiacriticosEs(comparedX);
-                                        console.log(stringIncluded);
-                                        console.log(comparedX);
+                                        //console.log(stringIncluded);
+                                       // console.log(comparedX);
 
                                        if (stringIncluded.includes(comparedX)){
                                          movieFINALNAME = arr5[c].innerHTML;
@@ -182,22 +183,141 @@ and open the template in the editor.
 
                            }
                      
-                   /**
-                   if (mainNODE.childNodes.length<2){
-                       infoNODE.innerHTML="NO HI HA RESULTATS";
-                   }
-                    */
+                            if (mainNODE.childNodes.length<2){
+                                infoNODE.innerHTML="NO HI HA RESULTATS";
+                            }
+                   
                      
                        } catch(error) {
+                           infoNODE.innerHTML="NO HI HA RESULTATS";
                        }
                    } 
                    }
                });
                
+            }
+            
+            function search_mejortorrent1(){
+               var mainNODE = document.getElementById("meri");
+               while (mainNODE.firstChild) {
+                    mainNODE.removeChild(mainNODE.firstChild);
+               }
+               var infoNODE = document.getElementById("info"); 
+               infoNODE.innerHTML="CERCANT...tingues paciència..";
+               
+               var x = document.getElementById("search_mejortorrent1").value;
+               document.getElementById("search_input").value="";
+               var regex = /<tr[\s\S]*Peliculas/i;
+               var queryURL = "https://mejortorrent1.com/?s=";
+               var downloadURL = "https://mejortorrent1.com/descargar.php";
+               //var queryURL = "http://www.mejortorrent.org/secciones.php?sec=buscador&valor="
+               var createdQuery = queryURL+x; 
+               //console.log(createdQuery);
+               
+               getHTML(createdQuery, "",function(response){
+                   var stringui = response.documentElement.innerHTML;
+                   var elements = response.getElementsByTagName('tr');
+                   var arr = Array.from(elements);
+                   for (var i=0; i<arr.length; i++){
+                       var childNodes = arr[i].childNodes;
+                       //console.log(childNodes);
+                       if (childNodes[3] != null){
+                           //console.log(childNodes[3]);
+                           var type = childNodes[3].innerHTML;
+                           if (type.includes("Peliculas") && ! type.includes("HD")){
+                               var mainNode = childNodes[1].childNodes;
+                               //console.log("mainNode");
+                               //console.log(mainNode);
+                               var nodeWithInfo = mainNode[1];
+                               //console.log(nodeWithInfo);
+                               var movieName = nodeWithInfo.innerHTML;
+                               var movieHREF = nodeWithInfo.href;
+                               //console.log(movieName);
+                               var text = /\S[\s\S]*/.exec(movieName);
+                               //console.log(text[0]);
+                               //console.log(movieHREF);
+                               
+                               getHTML(movieHREF, "", function(response2){
+                                   var movieTEXT = response2.documentElement.innerHTML;
+                                   var movieIMAGE = response2.getElementsByTagName('img');
+                                   var movieFORM = response2.getElementsByTagName('form');
+                                   //console.log(movieFORM);
+                                   var arr2 = Array.from(movieIMAGE);
+                                   var arr3 = Array.from(movieFORM);
+                                   var movieInput1Name = arr3[1][1].name;
+                                   var movieInput1Value = arr3[1][1].value;
+                                   var movieInput2Name = arr3[1][2].name;
+                                   var movieInput2Value = arr3[1][2].value;
+                                   var movieInput3Value = arr3[1][3].value;
+                                   var movieNAME = arr2[1].alt;
+                                   //console.log(arr2[1]);
+                                   //console.log(arr2[1].alt);
+                                   var movieIMAGESOURCE = arr2[1].src;
+                                   
+                                   
+                                 //NOW THAT WE HAVE ALL THE INFO, LETS CREATE THE RESULTS
+                                 var table = document.getElementById("meri");
+                                 var img = new Image();
+                                 img.src = movieIMAGESOURCE;
+                                 var row = table.insertRow(0);
+                                 var cell1 = row.insertCell(0);
+                                 var cell2 = row.insertCell(1);
+                                 var cell3 = row.insertCell(2);						  											  							  											  
+                                 var formulari = document.createElement("form");
+                                    formulari.setAttribute('method',"post");
+                                    formulari.setAttribute('action',downloadURL);
+                                 
+                                 var input = document.createElement("input");
+                                    input.setAttribute('type',"hidden");
+                                    input.setAttribute('name',movieInput1Name);
+                                    input.setAttribute('value',movieInput1Value);
+                                 var input2 = document.createElement("input");
+                                    input2.setAttribute('type',"hidden");
+                                    input2.setAttribute('name',movieInput2Name);
+                                    input2.setAttribute('value',movieInput2Value);
+                                    
+                                 var input3 = document.createElement("input");
+                                    input3.setAttribute('type',"hidden");
+                                    input3.setAttribute('name',"hash");
+                                    input3.setAttribute('value',movieInput3Value);
+                                    input3.setAttribute('id',"hash-post");
+                                 
+                                 var inputSUBMIT = document.createElement("input");
+                                    inputSUBMIT.setAttribute('type',"submit");
+                                    inputSUBMIT.setAttribute('value',"Descargar");
+                                    
+                                    formulari.appendChild(inputSUBMIT);
+                                    formulari.appendChild(input);
+                                    formulari.appendChild(input2);
+                                    formulari.appendChild(input3);
+                                    
+                                 cell1.innerHTML = movieNAME;
+                                 cell3.appendChild(formulari);
+                                 cell2.appendChild(img);
+                                 infoNODE.innerHTML="";
+                                 
+                               });
+                               
+
+                           }
+                       }
+                   }
+                   
+                   //console.log(mainNODE.childNodes);
+                   if (mainNODE.childNodes.length<2){
+                       infoNODE.innerHTML="NO HI HA RESULTATS";
+                   }
+                       
+               });
+               
             } 
         </script>
+        <br>
         <input id="search_input" value="" />
-        <input type="submit" value="Search" name="search" onclick="search()" />
+        <input type="submit" value="Cerca MejorTorrent.ORG" name="search" onclick="search()" />
+        <input id="search_mejortorrent1" value="" />
+        <input type="submit" value="Cerca MejorTorrent1" name="searchMejorTOrrent" onclick="search_mejortorrent1()" />
+        <br>
         <div id="info">
             
         </div>
