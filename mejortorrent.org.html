@@ -13,6 +13,14 @@ and open the template in the editor.
     </head>
     <body style="background-color:#9ACD32;height: 100%; width: 100%">
         <script>
+            
+            function wait(ms){
+                var start = new Date().getTime();
+                var end = start;
+                while(end < start + ms) {
+                  end = new Date().getTime();
+               }
+             }
            /**
            * Get HTML asynchronously
            * @param  {String}   url      The URL to get HTML from
@@ -52,6 +60,9 @@ and open the template in the editor.
                
                var x = document.getElementById("search_input").value;
                document.getElementById("search_input_series").value="";
+               document.getElementById("search_input_divx_series").value="";
+               document.getElementById("search_input_divx").value="";
+               
                var regex = /<tr[\s\S]*Peliculas/i;
                //var queryURL = "https://mejortorrent1.com/?s=";
                //var downloadURL = "https://mejortorrent1.com/descargar.php"
@@ -332,7 +343,9 @@ and open the template in the editor.
                
                var x = document.getElementById("search_input_series").value;
                document.getElementById("search_input").value="";
-               document.getElementById("search_input_dvix").value="";
+               document.getElementById("search_input_divx").value="";
+               document.getElementById("search_input_divx_series").value="";
+               
                var regex = /<tr[\s\S]*Series/i;
                //var queryURL = "https://mejortorrent1.com/?s=";
                //var downloadURL = "https://mejortorrent1.com/descargar.php"
@@ -512,6 +525,7 @@ and open the template in the editor.
                var x = document.getElementById("search_input_divx").value;
                document.getElementById("search_input").value="";
                document.getElementById("search_input_series").value="";
+               document.getElementById("search_input_divx_series").value="";
                
                var queryURL = "https://www.divxtotal3.net/?s=";
                var createdQuery = queryURL+x; 
@@ -590,9 +604,7 @@ and open the template in the editor.
                                  newA.href = linkFINAL;
                                  cell3.appendChild(newA);
                                  
-                                 if (mainNODE.childNodes.length<2){
-                                     infoNODE.innerHTML="NO HI HA RESULTATS";
-                                 }
+
 
                              });
                          }
@@ -651,9 +663,7 @@ and open the template in the editor.
                                  newA.href = linkFINAL;
                                  cell3.appendChild(newA);
                                  
-                                 if (mainNODE.childNodes.length<2){
-                                     infoNODE.innerHTML="NO HI HA RESULTATS";
-                                 }
+
 
                              });
                          }
@@ -674,7 +684,10 @@ and open the template in the editor.
                            var comparedX = x.toLowerCase();
                            stringIncluded = eliminarDiacriticosEs(stringIncluded);
                            comparedX = eliminarDiacriticosEs(comparedX);
-                           
+                         
+                         if (/\s/.test(comparedX)) {
+                               comparedX = comparedX.split(" ", 1);
+                           }
                          if (peliculaHREF.includes("peliculas") && stringIncluded.includes(comparedX)){
                              
                            getHTML(peliculaHREF, "",function(response2){
@@ -712,9 +725,7 @@ and open the template in the editor.
                                  newA.href = linkFINAL;
                                  cell3.appendChild(newA);
                                  
-                                 if (mainNODE.childNodes.length<2){
-                                     infoNODE.innerHTML="NO HI HA RESULTATS";
-                                 }
+
 
                              });
                          }
@@ -724,6 +735,9 @@ and open the template in the editor.
                });
               });
               });
+                  if (mainNODE.childNodes.length<2){
+                      infoNODE.innerHTML="NO HI HA RESULTATS";
+                  }
             }
             
             
@@ -762,10 +776,14 @@ and open the template in the editor.
                            var comparedX = x.toLowerCase();
                            stringIncluded = eliminarDiacriticosEs(stringIncluded);
                            comparedX = eliminarDiacriticosEs(comparedX);
-                           //console.log(peliculaHREF);
+                           console.log(peliculaHREF);
+                           
+                           if (/\s/.test(comparedX)) {
+                               comparedX = comparedX.split(" ", 1);
+                           }
                            
                          if (peliculaHREF.includes("series") && stringIncluded.includes(comparedX)){
-                             //console.log(peliculaHREF);
+                             console.log(peliculaHREF);
                            getHTML(peliculaHREF, "",function(response2){
                                var respostaambLINK = response2.getElementsByTagName("tr");
                                var arrRespostes = Array.from(respostaambLINK);
@@ -822,9 +840,7 @@ and open the template in the editor.
                                          console.log("Hi ha un error")
                                      }
                                     }
-                                 if (mainNODE.childNodes.length<2){
-                                     infoNODE.innerHTML="NO HI HA RESULTATS";
-                                 }
+      
 
                              });
                          }
@@ -832,6 +848,9 @@ and open the template in the editor.
                    }
     
                });
+                                 if (mainNODE.childNodes.length<2){
+                                     infoNODE.innerHTML="NO HI HA RESULTATS";
+                                 }
             }
         </script>
         <h1>Cercador TORRENTS</h1>
@@ -839,17 +858,25 @@ and open the template in the editor.
 
             <div id="pelicules" style="background-color:#C0C0C0;border:1px solid black;height: 140px; width: 40%;">
                 <h2 align="left" style="margin-left: 10px">PEL·LÍCULES</h2>
-                <input style="margin-left:10px" id="search_input" value="" />
-                <input type="submit" value="CERCA - Pelicules MejorTorrent.ORG" name="search" onclick="search()" />
-                <input style="display: block; margin-left:10px; margin-top:10px" id="search_input_divx" value="" />
-                <input type="submit" value="CERCA - Pelicules DIVXTOTAL" name="searchDivxTotal" onclick="search_divxtotal()" />
+                <div style="display:flex;">
+                    <input style="margin-left:10px" id="search_input" value="" />
+                    <input type="submit" value="CERCA - Pelicules MejorTorrent.ORG" name="search" onclick="search()" />
+                </div>
+                <div style="display:flex;">
+                    <input style="display: block; margin-left:10px; margin-top:10px" id="search_input_divx" value="" />
+                    <input style="height: 22px; margin-top:10px" type="submit" value="CERCA - Pelicules DIVXTOTAL" name="searchDivxTotal" onclick="search_divxtotal()" />
+                </div>
             </div>
             <div id="series" style="background-color:#C0C0C0;border:1px solid black;height: 140px; width: 40%;margin-right: 5px;margin-left: 5px;">
                 <h2 align="left" style="margin-left: 10px">SERIES</h2>
-                <input style="margin-left:10px" id="search_input_series" value="" />
-                <input type="submit" value="CERCA - Series MejorTorrent.ORG" name="search" onclick="search_series()" />
-                <input style="display: block; margin-left:10px; margin-top:10px" id="search_input_divx_series" value="" />
-                <input type="submit" value="CERCA - Series DIVXTOTAL" name="searchDivxTotalSeries" onclick="search_divxtotal_series()" /> 
+                <div style="display:flex;">
+                    <input style="margin-left:10px" id="search_input_series" value="" />
+                    <input type="submit" value="CERCA - Series MejorTorrent.ORG" name="search" onclick="search_series()" />
+                </div>
+                <div style="display:flex;">
+                    <input style="display: block; margin-left:10px; margin-top:10px" id="search_input_divx_series" value="" />
+                    <input style="height: 22px; margin-top:10px" type="submit" value="CERCA - Series DIVXTOTAL" name="searchDivxTotalSeries" onclick="search_divxtotal_series()" />
+                </div>
             </div>
         </div>
         <br>

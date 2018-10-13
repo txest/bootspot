@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Descarregar TORRENTS</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <script>
+           /**
+           * Get HTML asynchronously
+           * @param  {String}   url      The URL to get HTML from
+           * @param  {Function} callback A callback funtion. Pass in "response" variable to use returned HTML.
+           */
+            var getHTML = function ( url, callback ) {
+                    // Feature detection
+                    if ( !window.XMLHttpRequest ) return;
+                    // Create new request
+                    var xhr = new XMLHttpRequest();
+
+                    // Setup callback
+                    xhr.onload = function() {
+                            if ( callback && typeof( callback ) === 'function' ) {
+                                    callback( this.responseXML );
+                            }
+                    }
+                    // Get the HTML
+                    xhr.open( 'GET', url );
+                    xhr.responseType = 'document';
+                    xhr.send();
+
+            };
+            
+            function search(){
+               var x = document.getElementById("search_input").value;
+               var regex = "<tr[\s\S]*Peliculas/i";
+               var queryURL = "https://www.elitetorrent.biz/?s=";
+               var createdQuery = queryURL+x; 
+               
+               getHTML(createdQuery, function(response){
+                   var stringui = response;
+                   var llista = document.getElementById("principal");
+                   var trobar = stringui.getElementById("principal");
+                   document.getElementById("meri").appendChild(trobar);
+                   console.log(stringui);
+                   console.log(stringui.getElementById("principal"));
+               });
+            }
+            
+            //NOW THAT WE HAVE ALL THE INFO, LETS CREATE THE RESULTS
+            /*var table = document.getElementById("meri");
+            var row = table.insertRow(0);
+            var img = new Image();
+            img.src = movieIMAGESOURCE;
+
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+
+            var formulari = document.createElement("form");
+            formulari.setAttribute('action',finalDownloadLINK);
+
+            var input = document.createElement("input");
+            input.setAttribute('type',"submit");
+            input.setAttribute('value',"DESCARREGAR");
+
+            var newA = document.createElement("a");
+            var linkText = document.createTextNode("DESCARREGAR");
+            newA.appendChild(linkText);
+            newA.title = "DESCARREGAR";
+            newA.href = finalDownloadLINK;
+
+            formulari.appendChild(input);
+            cell1.innerHTML = movieFINALNAME;
+            cell3.appendChild(newA);
+            cell2.appendChild(img);
+            infoNODE.innerHTML="";*/
+            
+        </script>
+        <input id="search_input" value="" />
+        <input type="submit" value="Search" name="search" onclick="search()" />
+        <div id="info">
+            
+        </div>
+        <div >
+            <table id="meri">
+            
+            </table>
+        </div>
+        
+    </body>
+</html>
