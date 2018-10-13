@@ -8,7 +8,7 @@ and open the template in the editor.
     <head>
         <title>Descarregar TORRENTS</title>
         <meta charset="UTF-8">
-        <meta name="referrer" content="no-referrer-when-downgrade" />
+        <meta name="referrer" content="unsafe-url" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body style="background-color:#9ACD32;height: 100%; width: 100%">
@@ -332,6 +332,7 @@ and open the template in the editor.
                
                var x = document.getElementById("search_input_series").value;
                document.getElementById("search_input").value="";
+               document.getElementById("search_input_dvix").value="";
                var regex = /<tr[\s\S]*Series/i;
                //var queryURL = "https://mejortorrent1.com/?s=";
                //var downloadURL = "https://mejortorrent1.com/descargar.php"
@@ -498,23 +499,357 @@ and open the template in the editor.
                
             }
             
+            
+            
+          function search_divxtotal(){
+               var mainNODE = document.getElementById("meri");
+               while (mainNODE.firstChild) {
+                    mainNODE.removeChild(mainNODE.firstChild);
+               }
+               var infoNODE = document.getElementById("info"); 
+               infoNODE.innerHTML="CERCANT...tingues paciència..";
+               
+               var x = document.getElementById("search_input_divx").value;
+               document.getElementById("search_input").value="";
+               document.getElementById("search_input_series").value="";
+               
+               var queryURL = "https://www.divxtotal3.net/?s=";
+               var createdQuery = queryURL+x; 
+               var queryURL_nextPAGES = "https://www.divxtotal3.net/page/2/?s="+x;
+               var queryURL_nextPAGES2 = "https://www.divxtotal3.net/page/3/?s="+x;
+
+               
+               getHTML(createdQuery, "",function(response){
+               getHTML(queryURL_nextPAGES, "",function(response3){
+               getHTML(queryURL_nextPAGES2, "",function(response4){
+                   var stringui = response.documentElement.innerHTML;
+                   var stringui2 = response3.documentElement.innerHTML;
+                   var stringui3 = response4.documentElement.innerHTML;
+                   
+                   var pages = response.getElementsByTagName('tr');
+                   var pages2 = response3.getElementsByTagName('tr');
+                   var pages3 = response4.getElementsByTagName('tr');
+                   var arrPages = Array.from(pages);
+                   var arrPages2 = Array.from(pages2);
+                   var arrPages3 = Array.from(pages3);
+                   
+                   for (var i=0; i<arrPages.length; i++){
+                       var childNodes = arrPages[i].childNodes;
+                       //var peliculaNAME;
+                       //var peliculaPES;
+                       var peliculaHREF;
+                       
+                       if (childNodes.length==9){
+                          // peliculaNAME = childNodes[1].childNodes[1].innerHTML;
+                           //peliculaPES = childNodes[7].childNodes[0].wholeText;
+                           peliculaHREF = childNodes[1].childNodes[1].href;
+                           var stringIncluded = peliculaHREF.toLowerCase();
+                           var comparedX = x.toLowerCase();
+                           stringIncluded = eliminarDiacriticosEs(stringIncluded);
+                           comparedX = eliminarDiacriticosEs(comparedX);
+                           
+                         if (peliculaHREF.includes("peliculas") && stringIncluded.includes(comparedX)){
+                             
+                           getHTML(peliculaHREF, "",function(response2){
+                               var respostaambLINK = response2.getElementsByClassName("linktorrent");
+                               var imatgeambLINK = response2.getElementsByClassName("col-lg-3");
+                               var pesambLINK = response2.getElementsByClassName("tagitem pull-left");
+                               var peliculaPES = pesambLINK[3].nextElementSibling.innerText;
+                               var peliculaNAME = response2.getElementsByTagName('h1');
+                               console.log(peliculaNAME[0].textContent);
+                               
+                               
+                               var linkFINAL = respostaambLINK[0].href;
+                               var imgFINAL = imatgeambLINK[0].childNodes[1].src;
+                               var nomFINAL = peliculaNAME[0].textContent;
+                               
+                               //NOW THAT WE HAVE ALL THE INFO, LETS CREATE THE RESULTS
+                                 var table = document.getElementById("meri");
+                                 table.setAttribute('width',"\"100%\"");
+                                                 table.setAttribute('border',"\"1\"");
+                                                 table.setAttribute('bordercolor',"\"#000000\"");
+                                                 table.setAttribute('cellspacing',"\"4\"");
+                                                 table.setAttribute('cellpadding',"\"10\"");
+                                 var img = new Image();
+                                 img.src = imgFINAL;
+                                 img.setAttribute('height',"165");
+                                 img.setAttribute('width',"120");
+                                 var row = table.insertRow(0);
+                                 var cell1 = row.insertCell(0);
+                                 var cell2 = row.insertCell(1);
+                                 var cell3 = row.insertCell(2);	
+                                 var newA = document.createElement("a");
+                                 newA.setAttribute('style',"display: block");
+                                 var linkText = document.createTextNode("DESCARREGAR");
+                                 
+                                 cell1.innerHTML = nomFINAL+" - "+peliculaPES;
+                                 cell2.appendChild(img);
+                                 infoNODE.innerHTML="";
+                                 newA.appendChild(linkText);
+                                 newA.title = "DESCARREGAR";
+                                 newA.href = linkFINAL;
+                                 cell3.appendChild(newA);
+                                 
+                                 if (mainNODE.childNodes.length<2){
+                                     infoNODE.innerHTML="NO HI HA RESULTATS";
+                                 }
+
+                             });
+                         }
+                   } 
+                   }
+                   
+                   for (var i=0; i<arrPages2.length; i++){
+                       var childNodes = arrPages2[i].childNodes;
+                       //var peliculaNAME;
+                       //var peliculaPES;
+                       var peliculaHREF;
+                       
+                       if (childNodes.length==9){
+                          // peliculaNAME = childNodes[1].childNodes[1].innerHTML;
+                           //peliculaPES = childNodes[7].childNodes[0].wholeText;
+                           peliculaHREF = childNodes[1].childNodes[1].href;
+                           var stringIncluded = peliculaHREF.toLowerCase();
+                           var comparedX = x.toLowerCase();
+                           stringIncluded = eliminarDiacriticosEs(stringIncluded);
+                           comparedX = eliminarDiacriticosEs(comparedX);
+                           
+                         if (peliculaHREF.includes("peliculas") && stringIncluded.includes(comparedX)){
+                             
+                           getHTML(peliculaHREF, "",function(response2){
+                               var respostaambLINK = response2.getElementsByClassName("linktorrent");
+                               var imatgeambLINK = response2.getElementsByClassName("col-lg-3");
+                               var pesambLINK = response2.getElementsByClassName("tagitem pull-left");
+                               var peliculaPES = pesambLINK[3].nextElementSibling.innerText;
+                               var peliculaNAME = response2.getElementsByTagName('h1');
+                               console.log(peliculaNAME[0].textContent);
+                               
+                               
+                               var linkFINAL = respostaambLINK[0].href;
+                               var imgFINAL = imatgeambLINK[0].childNodes[1].src;
+                               var nomFINAL = peliculaNAME[0].textContent;
+                               
+                               //NOW THAT WE HAVE ALL THE INFO, LETS CREATE THE RESULTS
+                                 var table = document.getElementById("meri");
+                                 var img = new Image();
+                                 img.src = imgFINAL;
+                                 img.setAttribute('height',"165");
+                                 img.setAttribute('width',"120");
+                                 var row = table.insertRow(0);
+                                 var cell1 = row.insertCell(0);
+                                 var cell2 = row.insertCell(1);
+                                 var cell3 = row.insertCell(2);	
+                                 var newA = document.createElement("a");
+                                 newA.setAttribute('style',"display: block");
+                                 var linkText = document.createTextNode("DESCARREGAR");
+                                 
+                                 cell1.innerHTML = nomFINAL+" - "+peliculaPES;
+                                 cell2.appendChild(img);
+                                 infoNODE.innerHTML="";
+                                 newA.appendChild(linkText);
+                                 newA.title = "DESCARREGAR";
+                                 newA.href = linkFINAL;
+                                 cell3.appendChild(newA);
+                                 
+                                 if (mainNODE.childNodes.length<2){
+                                     infoNODE.innerHTML="NO HI HA RESULTATS";
+                                 }
+
+                             });
+                         }
+                   } 
+                   }
+                   
+                   for (var i=0; i<arrPages3.length; i++){
+                       var childNodes = arrPages3[i].childNodes;
+                       //var peliculaNAME;
+                       //var peliculaPES;
+                       var peliculaHREF;
+                       
+                       if (childNodes.length==9){
+                          // peliculaNAME = childNodes[1].childNodes[1].innerHTML;
+                           //peliculaPES = childNodes[7].childNodes[0].wholeText;
+                           peliculaHREF = childNodes[1].childNodes[1].href;
+                           var stringIncluded = peliculaHREF.toLowerCase();
+                           var comparedX = x.toLowerCase();
+                           stringIncluded = eliminarDiacriticosEs(stringIncluded);
+                           comparedX = eliminarDiacriticosEs(comparedX);
+                           
+                         if (peliculaHREF.includes("peliculas") && stringIncluded.includes(comparedX)){
+                             
+                           getHTML(peliculaHREF, "",function(response2){
+                               var respostaambLINK = response2.getElementsByClassName("linktorrent");
+                               var imatgeambLINK = response2.getElementsByClassName("col-lg-3");
+                               var pesambLINK = response2.getElementsByClassName("tagitem pull-left");
+                               var peliculaPES = pesambLINK[3].nextElementSibling.innerText;
+                               var peliculaNAME = response2.getElementsByTagName('h1');
+                               console.log(peliculaNAME[0].textContent);
+                               
+                               
+                               var linkFINAL = respostaambLINK[0].href;
+                               var imgFINAL = imatgeambLINK[0].childNodes[1].src;
+                               var nomFINAL = peliculaNAME[0].textContent;
+                               
+                               //NOW THAT WE HAVE ALL THE INFO, LETS CREATE THE RESULTS
+                                 var table = document.getElementById("meri");
+                                 var img = new Image();
+                                 img.src = imgFINAL;
+                                 img.setAttribute('height',"165");
+                                 img.setAttribute('width',"120");
+                                 var row = table.insertRow(0);
+                                 var cell1 = row.insertCell(0);
+                                 var cell2 = row.insertCell(1);
+                                 var cell3 = row.insertCell(2);	
+                                 var newA = document.createElement("a");
+                                 newA.setAttribute('style',"display: block");
+                                 var linkText = document.createTextNode("DESCARREGAR");
+                                 
+                                 cell1.innerHTML = nomFINAL+" - "+peliculaPES;
+                                 cell2.appendChild(img);
+                                 infoNODE.innerHTML="";
+                                 newA.appendChild(linkText);
+                                 newA.title = "DESCARREGAR";
+                                 newA.href = linkFINAL;
+                                 cell3.appendChild(newA);
+                                 
+                                 if (mainNODE.childNodes.length<2){
+                                     infoNODE.innerHTML="NO HI HA RESULTATS";
+                                 }
+
+                             });
+                         }
+                   } 
+                   }
+                   
+               });
+              });
+              });
+            }
+            
+            
+            function search_divxtotal_series(){
+               var mainNODE = document.getElementById("meri");
+               while (mainNODE.firstChild) {
+                    mainNODE.removeChild(mainNODE.firstChild);
+               }
+               var infoNODE = document.getElementById("info"); 
+               infoNODE.innerHTML="CERCANT...tingues paciència..";
+               
+               var x = document.getElementById("search_input_divx_series").value;
+               document.getElementById("search_input").value="";
+               document.getElementById("search_input_series").value="";
+               document.getElementById("search_input_divx").value="";
+               
+               var queryURL = "https://www.divxtotal3.net/?s=";
+               var createdQuery = queryURL+x; 
+               
+               getHTML(createdQuery, "",function(response){
+                   
+                   var pages = response.getElementsByTagName('tr');
+                   var arrPages = Array.from(pages);
+                   
+                   for (var i=0; i<arrPages.length; i++){
+                       var childNodes = arrPages[i].childNodes;
+                       //var peliculaNAME;
+                       //var peliculaPES;
+                       var peliculaHREF;
+                       
+                       if (childNodes.length==9){
+                          // peliculaNAME = childNodes[1].childNodes[1].innerHTML;
+                           //peliculaPES = childNodes[7].childNodes[0].wholeText;
+                           peliculaHREF = childNodes[1].childNodes[1].href;
+                           var stringIncluded = peliculaHREF.toLowerCase();
+                           var comparedX = x.toLowerCase();
+                           stringIncluded = eliminarDiacriticosEs(stringIncluded);
+                           comparedX = eliminarDiacriticosEs(comparedX);
+                           //console.log(peliculaHREF);
+                           
+                         if (peliculaHREF.includes("series") && stringIncluded.includes(comparedX)){
+                             //console.log(peliculaHREF);
+                           getHTML(peliculaHREF, "",function(response2){
+                               var respostaambLINK = response2.getElementsByTagName("tr");
+                               var arrRespostes = Array.from(respostaambLINK);
+                               var imatgeambLINK = response2.getElementsByClassName("img-responsive");
+                               var peliculaNAME = response2.getElementsByTagName('h1');
+                               var imgFINAL="";
+                               try{
+                                   imgFINAL = imatgeambLINK[0].src;
+                               } catch(error){
+                                   
+                               }
+                            
+
+                               var nomFINAL = peliculaNAME[0].textContent;
+
+                               //NOW THAT WE HAVE ALL THE INFO, LETS CREATE THE RESULTS
+                                 var table = document.getElementById("meri");
+                                 table.setAttribute('width',"\"100%\"");
+                                                 table.setAttribute('border',"\"1\"");
+                                                 table.setAttribute('bordercolor',"\"#000000\"");
+                                                 table.setAttribute('cellspacing',"\"4\"");
+                                                 table.setAttribute('cellpadding',"\"10\"");
+                                 var img = new Image();
+                                 img.src = imgFINAL;
+                                 img.setAttribute('height',"165");
+                                 img.setAttribute('width',"120");
+                                 var row = table.insertRow(0);
+                                 var cell1 = row.insertCell(0);
+                                 var cell2 = row.insertCell(1);
+                                 var cell3 = row.insertCell(2);	
+                                 
+                                 
+                                 cell1.innerHTML = nomFINAL;
+                                 cell2.appendChild(img);
+                                 infoNODE.innerHTML="";
+                                 for (var e=0;e<arrRespostes.length;e++){
+                                     try{
+                                     var tempLINK = arrRespostes[e].childNodes[3].childNodes[0].href;
+                                     var compLINK = eliminarDiacriticosEs(tempLINK);    
+                                     compLINK = compLINK.toLowerCase();
+                                     
+                                    if (compLINK.includes(comparedX) && compLINK.includes("torrent")){ 
+                                        var newA = document.createElement("a");
+                                        newA.setAttribute('style',"display: block");
+                                        var tempREGEX = /([^/]*.torrent)/.exec(tempLINK);
+                                        var linkText = document.createTextNode(tempREGEX[1]);
+                                        newA.appendChild(linkText);
+                                        newA.title = "DESCARREGAR";
+                                        newA.href = tempLINK;
+                                        cell3.appendChild(newA);
+                                    }
+                                    
+                                     }catch(error){
+                                         console.log("Hi ha un error")
+                                     }
+                                    }
+                                 if (mainNODE.childNodes.length<2){
+                                     infoNODE.innerHTML="NO HI HA RESULTATS";
+                                 }
+
+                             });
+                         }
+                   } 
+                   }
+    
+               });
+            }
         </script>
         <h1>Cercador TORRENTS</h1>
         <div id="pare" style="display:flex">
 
-            <div id="pelicules" style="background-color:#C0C0C0;border:1px solid black;height: 120px; width: 40%;">
+            <div id="pelicules" style="background-color:#C0C0C0;border:1px solid black;height: 140px; width: 40%;">
                 <h2 align="left" style="margin-left: 10px">PEL·LÍCULES</h2>
                 <input style="margin-left:10px" id="search_input" value="" />
                 <input type="submit" value="CERCA - Pelicules MejorTorrent.ORG" name="search" onclick="search()" />
-               <!-- <input id="search_mejortorrent1" value="" />
-               <input type="submit" value="CERCA - Pelicules MejorTorrent1" name="searchMejorTOrrent" onclick="search_mejortorrent1()" /> -->
+                <input style="display: block; margin-left:10px; margin-top:10px" id="search_input_divx" value="" />
+                <input type="submit" value="CERCA - Pelicules DIVXTOTAL" name="searchDivxTotal" onclick="search_divxtotal()" />
             </div>
-            <div id="series" style="background-color:#C0C0C0;border:1px solid black;height: 120px; width: 40%;margin-right: 5px;margin-left: 5px;">
+            <div id="series" style="background-color:#C0C0C0;border:1px solid black;height: 140px; width: 40%;margin-right: 5px;margin-left: 5px;">
                 <h2 align="left" style="margin-left: 10px">SERIES</h2>
                 <input style="margin-left:10px" id="search_input_series" value="" />
                 <input type="submit" value="CERCA - Series MejorTorrent.ORG" name="search" onclick="search_series()" />
-               <!-- <input id="search_mejortorrent1_series" value="" />
-                <input type="submit" value="CERCA - Series MejorTorrent1" name="searchMejorTOrrent" onclick="search_mejortorrent1()" /> -->
+                <input style="display: block; margin-left:10px; margin-top:10px" id="search_input_divx_series" value="" />
+                <input type="submit" value="CERCA - Series DIVXTOTAL" name="searchDivxTotalSeries" onclick="search_divxtotal_series()" /> 
             </div>
         </div>
         <br>
