@@ -4,14 +4,14 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
-<html>
+<html style="background-color:#9ACD32;height: 100%; width: 100%">
     <head>
         <title>Descarregar TORRENTS</title>
         <meta charset="UTF-8">
         <meta name="referrer" content="no-referrer-when-downgrade" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-    <body>
+    <body style="background-color:#9ACD32;height: 100%; width: 100%">
         <script>
            /**
            * Get HTML asynchronously
@@ -51,7 +51,7 @@ and open the template in the editor.
                infoNODE.innerHTML="CERCANT...tingues paciència..";
                
                var x = document.getElementById("search_input").value;
-               document.getElementById("search_mejortorrent1").value="";
+               document.getElementById("search_input_series").value="";
                var regex = /<tr[\s\S]*Peliculas/i;
                //var queryURL = "https://mejortorrent1.com/?s=";
                //var downloadURL = "https://mejortorrent1.com/descargar.php"
@@ -149,6 +149,11 @@ and open the template in the editor.
 
                                         //NOW THAT WE HAVE ALL THE INFO, LETS CREATE THE RESULTS
                                         var table = document.getElementById("meri");
+                                        table.setAttribute('width',"\"100%\"");
+                                                 table.setAttribute('border',"\"1\"");
+                                                 table.setAttribute('bordercolor',"\"#000000\"");
+                                                 table.setAttribute('cellspacing',"\"4\"");
+                                                 table.setAttribute('cellpadding',"\"10\"");
                                         var row = table.insertRow(0);
                                         var img = new Image();
                                         img.src = movieIMAGESOURCE;
@@ -257,6 +262,11 @@ and open the template in the editor.
                                    
                                  //NOW THAT WE HAVE ALL THE INFO, LETS CREATE THE RESULTS
                                  var table = document.getElementById("meri");
+                                 table.setAttribute('width',"\"100%\"");
+                                                 table.setAttribute('border',"\"1\"");
+                                                 table.setAttribute('bordercolor',"\"#000000\"");
+                                                 table.setAttribute('cellspacing',"\"4\"");
+                                                 table.setAttribute('cellpadding',"\"10\"");
                                  var img = new Image();
                                  img.src = movieIMAGESOURCE;
                                  var row = table.insertRow(0);
@@ -284,7 +294,7 @@ and open the template in the editor.
                                  
                                  var inputSUBMIT = document.createElement("input");
                                     inputSUBMIT.setAttribute('type',"submit");
-                                    inputSUBMIT.setAttribute('value',"Descargar");
+                                    inputSUBMIT.setAttribute('value',"DESCARREGAR");
                                     
                                     formulari.appendChild(inputSUBMIT);
                                     formulari.appendChild(input);
@@ -311,12 +321,202 @@ and open the template in the editor.
                });
                
             } 
+               
+       function search_series(){
+               var mainNODE = document.getElementById("meri");
+               while (mainNODE.firstChild) {
+                    mainNODE.removeChild(mainNODE.firstChild);
+               }
+               var infoNODE = document.getElementById("info"); 
+               infoNODE.innerHTML="CERCANT...tingues paciència..";
+               
+               var x = document.getElementById("search_input_series").value;
+               document.getElementById("search_input").value="";
+               var regex = /<tr[\s\S]*Series/i;
+               //var queryURL = "https://mejortorrent1.com/?s=";
+               //var downloadURL = "https://mejortorrent1.com/descargar.php"
+               var queryURL = "http://www.mejortorrent.org/secciones.php?sec=buscador&valor="
+               var createdQuery = queryURL+x; 
+
+               
+               getHTML(createdQuery, "",function(response){
+                   var stringui = response.documentElement.innerHTML;
+                   var elements = response.getElementsByTagName('tr');
+                   var arr = Array.from(elements);
+                   for (var i=0; i<arr.length; i++){
+                       var childNodes = arr[i].childNodes;
+                       
+                       if (childNodes.length===2){
+                           //console.log(childNodes);
+                           var types = childNodes[1];
+                           //console.log(type);
+                           try{
+                             var type = types.innerHTML;
+                             var mainNode = childNodes[0].childNodes;
+                             var movieFormat = mainNode[2].innerHTML;
+                             //console.log(type);
+                             //console.log(mainNode);
+                             //console.log("__________");
+                             
+                             if (type.includes("Serie") && ! movieFormat.includes("1080") && !movieFormat.includes("720")){
+                               var nodeWithInfo = mainNode[0];
+                               //var movieNAME = nodeWithInfo.innerHTML;
+                               //movieNAME = movieNAME.replace(/<font color="darkblue">/gi,"");
+                               //movieNAME = movieNAME.replace(/<\/font>/gi,"");
+                               //console.log(movieNAME);
+                               var movieHREF = nodeWithInfo.href;
+
+                              // var text = /\S[\s\S]*/.exec(movieName);
+                               //console.log(text[0]);
+                               //console.log(movieHREF);
+
+                               getHTML(movieHREF, i, function(response2){
+                                   var movieIMAGE = response2.getElementsByTagName('img');
+                                   var arr2 = Array.from(movieIMAGE);
+                                   var movieIMAGESOURCE = arr2[1].src;
+                                   var movieA = response2.getElementsByTagName('a');
+                                   var arr3 = Array.from(movieA);
+                                   var movieID;
+                                   
+                                   var movieNAME = response2.getElementsByTagName('b');
+                                   var movieFINALNAME;
+                                   var arr5 = Array.from(movieNAME);
+                                   var index;
+                                   
+                                   for(var c=0;c<arr5.length;c++){
+                              
+                                    try {
+                                        var stringIncluded = arr5[c].innerHTML.toLowerCase();
+                                        var comparedX = x.toLowerCase();
+                                        stringIncluded = eliminarDiacriticosEs(stringIncluded);
+                                        comparedX = eliminarDiacriticosEs(comparedX);
+                                        //console.log(stringIncluded);
+                                       // console.log(comparedX);
+                                       // console.log("___________");
+
+                                       if (stringIncluded.includes(comparedX)){
+                                         movieFINALNAME = arr5[c].innerHTML;
+                                         index=c+1;
+                                       }
+                                       if (index==c){
+                                         // console.log(stringIncluded)
+                                          movieFINALNAME = movieFINALNAME + arr5[c].innerHTML;
+                                       }
+                                    } catch(error){
+     
+                                    }
+                                   }
+                                   var arrCAPITOLS = [];
+                                   for (var y=0;y<arr3.length;y++){
+                                        try{
+                                           var hrefDownload = arr3[y].href;
+                                           if (hrefDownload.includes("serie-episodio")){
+                                               var capitolURL = hrefDownload;
+                                               arrCAPITOLS.push(capitolURL);
+                                           }
+                                        }catch(error){ }
+                                   }
+                                   
+                                  
+                                                 //NOW THAT WE HAVE ALL THE INFO, LETS CREATE THE RESULTS
+                                                 var table = document.getElementById("meri");
+                                                 table.setAttribute('width',"\"100%\"");
+                                                 table.setAttribute('border',"\"1\"");
+                                                 table.setAttribute('bordercolor',"\"#000000\"");
+                                                 table.setAttribute('cellspacing',"\"4\"");
+                                                 table.setAttribute('cellpadding',"\"10\"");
+                                                 var row = table.insertRow(0);
+                                                 var img = new Image();
+                                                 img.src = movieIMAGESOURCE;
+
+                                                 var cell1 = row.insertCell(0);
+                                                 var cell2 = row.insertCell(1);
+                                                 var cell3 = row.insertCell(2);
+
+                                                 cell1.innerHTML = movieFINALNAME;
+                                                 cell2.appendChild(img);
+                                                 
+                                                 infoNODE.innerHTML="";
+                                   
+                                   for (var w=0; w<arrCAPITOLS.length; w++){
+                                        getHTML(arrCAPITOLS[w], arrCAPITOLS.length, function(response4){
+                                            var capitolSerieLINK = response4.getElementsByTagName('a');
+                                            var arrCAPITOLSERIES = Array.from(capitolSerieLINK);
+                                            var capitolURL;
+                                            
+                                            for (var q=0;q<arr3.length;q++){
+                                                    try{
+                                                       var hrefDownload = arrCAPITOLSERIES[q].href;
+                                                       if (hrefDownload.includes("tabla=series")){
+                                                           capitolURL = hrefDownload;
+                                                          // console.log(capitolURL);
+                                                       }
+                                                    }catch(error){ }
+                                               }
+                                            
+                                            getHTML(capitolURL, "", function(response3){
+                                                var movieAA = response3.getElementsByTagName('a');
+                                                var arr4 = Array.from(movieAA);
+                                                var finalDownloadLINK;
+                                                for (var y=0;y<arr4.length;y++){
+                                                 try{
+                                                    var hrefDownload = arr4[y].href;
+                                                    if (hrefDownload.includes("table=series") && hrefDownload.includes(".torrent")){
+                                                        finalDownloadLINK = hrefDownload;
+                                                    }
+                                                 }catch(error){ }
+                                                }
+                                                 var newA = document.createElement("a");
+                                                 newA.setAttribute('style',"display: block");
+                                                 var capitolNAME = /name=(.*).torrent/.exec(finalDownloadLINK) 
+                                                 var linkText = document.createTextNode("Descarregar capítol: "+capitolNAME[1]);
+                                                 newA.appendChild(linkText);
+                                                 newA.title = "DESCARREGAR";
+                                                 newA.href = finalDownloadLINK;
+                                                 cell3.appendChild(newA);
+
+                                            });
+
+                                        });
+                                    }
+                               });
+                               
+
+                           }
+                     
+                            if (mainNODE.childNodes.length<2){
+                                infoNODE.innerHTML="NO HI HA RESULTATS";
+                            }
+                   
+                     
+                       } catch(error) {
+                           infoNODE.innerHTML="NO HI HA RESULTATS";
+                       }
+                   } 
+                   }
+               });
+               
+            }
+            
         </script>
-        <br>
-        <input id="search_input" value="" />
-        <input type="submit" value="Cerca MejorTorrent.ORG" name="search" onclick="search()" />
-        <input id="search_mejortorrent1" value="" />
-        <input type="submit" value="Cerca MejorTorrent1" name="searchMejorTOrrent" onclick="search_mejortorrent1()" />
+        <h1>Cercador TORRENTS</h1>
+        <div id="pare" style="display:flex">
+
+            <div id="pelicules" style="background-color:#C0C0C0;border:1px solid black;height: 120px; width: 40%;">
+                <h2 align="left" style="margin-left: 10px">PEL·LÍCULES</h2>
+                <input style="margin-left:10px" id="search_input" value="" />
+                <input type="submit" value="CERCA - Pelicules MejorTorrent.ORG" name="search" onclick="search()" />
+               <!-- <input id="search_mejortorrent1" value="" />
+               <input type="submit" value="CERCA - Pelicules MejorTorrent1" name="searchMejorTOrrent" onclick="search_mejortorrent1()" /> -->
+            </div>
+            <div id="series" style="background-color:#C0C0C0;border:1px solid black;height: 120px; width: 40%;margin-right: 5px;margin-left: 5px;">
+                <h2 align="left" style="margin-left: 10px">SERIES</h2>
+                <input style="margin-left:10px" id="search_input_series" value="" />
+                <input type="submit" value="CERCA - Series MejorTorrent.ORG" name="search" onclick="search_series()" />
+               <!-- <input id="search_mejortorrent1_series" value="" />
+                <input type="submit" value="CERCA - Series MejorTorrent1" name="searchMejorTOrrent" onclick="search_mejortorrent1()" /> -->
+            </div>
+        </div>
         <br>
         <div id="info">
             
